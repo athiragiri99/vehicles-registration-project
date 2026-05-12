@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Vehicle</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>Edit Vehicle</h1>
+
+    <form method="post">
+        <label>Owner:</label>
+        <input type="text" name="owner" value="{{ vehicle.owner }}" required><br><br>
+
+        <label>Plate:</label>
+        <input type="text" name="plate" value="{{ vehicle.plate }}" required><br><br>
+
+        <label>Expiry:</label>
+        <input type="date" name="expiry" value="{{ vehicle.expiry }}" required><br><br>
+
+        <label>Status:</label>
+        <select name="status">
+            <option {% if vehicle.status == 'Active' %}selected{% endif %}>Active</option>
+            <option {% if vehicle.status == 'Expired' %}selected{% endif %}>Expired</option>
+            <option {% if vehicle.status == 'Pending' %}selected{% endif %}>Pending</option>
+        </select><br><br>
+
+        <button type="submit">Update</button>
+    </form>
+
+    <br>
+    <a href="/">Back to Dashboard</a>
+
+</body>
+</html>

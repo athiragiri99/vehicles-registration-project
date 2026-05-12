@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Vehicle Dashboard</h1>
+
+    <div style="background:white; padding:15px; margin-bottom:20px;">
+    <h3>System Overview</h3>
+    Total: {{ total }} |
+    Active: {{ active }} |
+    Expired: {{ expired }} |
+    Pending: {{ pending }}
+    </div>
+
+    <a href="/add">Add Vehicle</a> |
+    <a href="/search">Search</a>
+
+    <h2>All Records</h2>
+    <table border="1">
+        <tr>
+            <th>Owner</th>
+            <th>Plate</th>
+            <th>Expiry</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        {% for v in vehicles %}
+        <tr class="{% if v.status == 'Expired' %}expired{% endif %}"></tr>
+            <td>{{ v.owner }}</td>
+            <td>{{ v.plate }}</td>
+            <td>{{ v.expiry }}</td>
+            <td>{{ v.status }}</td>
+            <td><a href="/edit/{{ v.id }}">Edit</a></td>
+            <td><a href="/delete/{{ v.id }}" onclick="return confirm('Are you sure?')">Delete</a></td> 
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Vehicle</title>
+</head>
+<body>
+    <h1>Add Vehicle</h1>
+
+    <form method="post">
+        Owner: <input type="text" name="owner" required><br>
+        Plate: <input type="text" name="plate" required><br>
+        Expiry: <input type="date" name="expiry" required><br>
+
+        Status:
+        <select name="status">
+            <option>Active</option>
+            <option>Expired</option>
+            <option>Pending</option>
+        </select><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <a href="/">Back</a>
+</body>
+</html>

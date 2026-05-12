@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search</title>
+</head>
+<body>
+    <h1>Search Vehicles</h1>
+
+    <form method="post">
+        <input type="text" name="query" placeholder="Enter name or plate">
+        <button type="submit">Search</button>
+    </form>
+
+    <h2>Results</h2>
+    <table border="1">
+        <tr>
+            <th>Owner</th>
+            <th>Plate</th>
+            <th>Expiry</th>
+            <th>Status</th>
+        </tr>
+        {% for v in results %}
+        <tr>
+            <td>{{ v.owner }}</td>
+            <td>{{ v.plate }}</td>
+            <td>{{ v.expiry }}</td>
+            <td>{{ v.status }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <a href="/">Back</a>
+</body>
+</html>
