@@ -29,9 +29,11 @@ th {
     color: white;
 }
 
+
 .expired {
-    background-color: #ffdddd;
+    background-color: #ffe6e6;
 }
+
 
 a {
     text-decoration: none;

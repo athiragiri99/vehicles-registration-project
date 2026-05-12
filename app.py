@@ -26,24 +26,58 @@ def init_db():
 
 init_db()
 
+def get_status(expiry_date, approved):
+    today = datetime.today().date()
+    expiry = datetime.strptime(expiry_date, "%m/%d/%Y").date()
+
+    if approved == 0:
+        return "Pending"
+    elif expiry < today:
+        return "Expired"
+    else:
+        return "Active"
+
 @app.route('/')
 def index():
     conn = get_db_connection()
     vehicles = conn.execute('SELECT * FROM vehicles').fetchall()
 
-    total = len(vehicles)
-    active = len([v for v in vehicles if v['status'] == 'Active'])
-    expired = len([v for v in vehicles if v['status'] == 'Expired'])
-    pending = len([v for v in vehicles if v['status'] == 'Pending'])
+    updated = []
+
+    for v in vehicles:
+        expiry_date = datetime.strptime(v['expiry'], "%m/%d/%Y").date()
+        today = datetime.today().date()
+
+        # NEW LOGIC
+        if v['approved'] == 0:
+            status = "Pending"
+        elif expiry_date < today:
+            status = "Expired"
+        else:
+            status = "Active"
+
+        updated.append({
+            "id": v["id"],
+            "owner": v["owner"],
+            "plate": v["plate"],
+            "expiry": v["expiry"],
+            "status": status
+        })
+
+    total = len(updated)
+    active = len([v for v in updated if v['status'] == 'Active'])
+    expired = len([v for v in updated if v['status'] == 'Expired'])
+    pending = len([v for v in updated if v['status'] == 'Pending'])
 
     conn.close()
 
     return render_template('index.html',
-                           vehicles=vehicles,
+                           vehicles=updated,
                            total=total,
                            active=active,
                            expired=expired,
                            pending=pending)
+
 
 
 @app.route('/add', methods=('GET', 'POST'))
@@ -51,16 +85,19 @@ def add():
     if request.method == 'POST':
         owner = request.form['owner']
         plate = request.form['plate']
-        expiry = request.form['expiry']
-        status = request.form['status']
 
-        #convert to date format
         raw_expiry = request.form['expiry']
-        expiry = datetime.strptime(raw_expiry, '%Y-%m-%d').strftime('%m/%d/%Y')
+        expiry = datetime.strptime(raw_expiry, "%Y-%m-%d").strftime("%m/%d/%Y")
+
+        # NEW: always start as NOT approved
+        approved = 0
+        status = "Pending"
 
         conn = get_db_connection()
-        conn.execute('INSERT INTO vehicles (owner, plate, expiry, status) VALUES (?, ?, ?, ?)',
-                     (owner, plate, expiry, status))
+        conn.execute(
+            'INSERT INTO vehicles (owner, plate, expiry, status, approved) VALUES (?, ?, ?, ?, ?)',
+            (owner, plate, expiry, status, approved)
+        )
         conn.commit()
         conn.close()
 
@@ -68,6 +105,19 @@ def add():
 
     return render_template('add.html')
 
+@app.route('/approve/<int:id>')
+def approve(id):
+    conn = get_db_connection()
+
+    conn.execute(
+        'UPDATE vehicles SET approved = 1 WHERE id = ?',
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect('/')
 
 @app.route('/search', methods=('GET', 'POST')) 
 def search(): 

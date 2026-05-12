@@ -27,13 +27,19 @@
             <th>Action</th>
         </tr>
         {% for v in vehicles %}
-        <tr class="{% if v.status == 'Expired' %}expired{% endif %}"></tr>
+        <tr class="{% if v.status == 'Expired' %}expired{% endif %}">
             <td>{{ v.owner }}</td>
             <td>{{ v.plate }}</td>
             <td>{{ v.expiry }}</td>
             <td>{{ v.status }}</td>
-            <td><a href="/edit/{{ v.id }}">Edit</a></td>
-            <td><a href="/delete/{{ v.id }}" onclick="return confirm('Are you sure?')">Delete</a></td> 
+            <td>
+                <a href="/edit/{{ v.id }}">Edit</a> |
+                <a href="/delete/{{ v.id }}" onclick="return confirm('Are you sure?')">Delete</a>
+
+                {% if v.status == 'Pending' %}
+            |   <a href="/approve/{{ v.id }}">Approve</a>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </table>
