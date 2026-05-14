@@ -2,25 +2,31 @@
 <html>
 <head>
     <title>Add Vehicle</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>Add Vehicle</h1>
 
     <form method="post">
-        Owner: <input type="text" name="owner" required><br>
-        Plate: <input type="text" name="plate" required><br>
-        Expiry: <input type="date" name="expiry" required><br>
+        <label>Owner:</label> 
+        <input type="text" name="owner" required><br><br>
 
-        Status:
+        <label>Plate:</label> 
+        <input type="text" name="plate" required><br><br>
+
+        <label>Expiry:</label> 
+        <input type="date" name="expiry" required><br><br>
+
+        <label>Status:</label>
         <select name="status">
-            <option>Active</option>
-            <option>Expired</option>
-            <option>Pending</option>
-        </select><br>
+            <option value="Pending">Pending</option>
+            <option value="Active">Active</option>
+            <option value="Expired">Expired</option>
+        </select><br><br>
 
         <button type="submit">Submit</button>
     </form>
-
-    <a href="/">Back</a>
+    <br><br>
+    <a href="/">Back to Dashboard</a>
 </body>
 </html>

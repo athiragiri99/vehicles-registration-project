@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 import sqlite3
 from datetime import datetime
+import re
 
 app = Flask(__name__)
 
@@ -26,17 +27,6 @@ def init_db():
 
 init_db()
 
-def get_status(expiry_date, approved):
-    today = datetime.today().date()
-    expiry = datetime.strptime(expiry_date, "%m/%d/%Y").date()
-
-    if approved == 0:
-        return "Pending"
-    elif expiry < today:
-        return "Expired"
-    else:
-        return "Active"
-
 @app.route('/')
 def index():
     conn = get_db_connection()
@@ -48,13 +38,12 @@ def index():
         expiry_date = datetime.strptime(v['expiry'], "%m/%d/%Y").date()
         today = datetime.today().date()
 
-        # NEW LOGIC
-        if v['approved'] == 0:
-            status = "Pending"
-        elif expiry_date < today:
+         # Keep saved status first
+        status = v["status"]
+
+        # But force expired vehicles to Expired
+        if expiry_date < today:
             status = "Expired"
-        else:
-            status = "Active"
 
         updated.append({
             "id": v["id"],
@@ -67,16 +56,13 @@ def index():
     total = len(updated)
     active = len([v for v in updated if v['status'] == 'Active'])
     expired = len([v for v in updated if v['status'] == 'Expired'])
-    pending = len([v for v in updated if v['status'] == 'Pending'])
-
     conn.close()
 
     return render_template('index.html',
                            vehicles=updated,
                            total=total,
                            active=active,
-                           expired=expired,
-                           pending=pending)
+                           expired=expired)
 
 
 
@@ -84,19 +70,23 @@ def index():
 def add():
     if request.method == 'POST':
         owner = request.form['owner']
-        plate = request.form['plate']
+        plate = request.form['plate'].upper().strip()
+
+        pattern = r'^[A-Z]{3}-?\d{4}$'
+
+        if not re.match(pattern, plate):
+            return "Invalid Texas plate format. Use ABC1234 or ABC-1234", 400
 
         raw_expiry = request.form['expiry']
         expiry = datetime.strptime(raw_expiry, "%Y-%m-%d").strftime("%m/%d/%Y")
 
         # NEW: always start as NOT approved
-        approved = 0
-        status = "Pending"
+        status = request.form['status']
 
         conn = get_db_connection()
         conn.execute(
-            'INSERT INTO vehicles (owner, plate, expiry, status, approved) VALUES (?, ?, ?, ?, ?)',
-            (owner, plate, expiry, status, approved)
+            'INSERT INTO vehicles (owner, plate, expiry, status) VALUES (?, ?, ?, ?)',
+            (owner, plate, expiry, status)
         )
         conn.commit()
         conn.close()
@@ -105,29 +95,27 @@ def add():
 
     return render_template('add.html')
 
-@app.route('/approve/<int:id>')
-def approve(id):
-    conn = get_db_connection()
 
-    conn.execute(
-        'UPDATE vehicles SET approved = 1 WHERE id = ?',
-        (id,)
-    )
+@app.route('/search', methods=('GET', 'POST'))
+def search():
+    results = []
+    message = None
 
-    conn.commit()
-    conn.close()
+    if request.method == 'POST':
+        query = request.form['query'].strip()
 
-    return redirect('/')
+        conn = get_db_connection()
+        results = conn.execute(
+            "SELECT * FROM vehicles WHERE owner LIKE ? OR plate LIKE ?",
+            ('%' + query + '%', '%' + query + '%')
+        ).fetchall()
+        conn.close()
 
-@app.route('/search', methods=('GET', 'POST')) 
-def search(): 
-    results = [] 
-    if request.method == 'POST': 
-        query = request.form['query'] 
-        conn = get_db_connection() 
-        results = conn.execute( "SELECT * FROM vehicles WHERE owner LIKE ? OR plate LIKE ?", ('%' + query + '%', '%' + query + '%') ).fetchall() 
-        conn.close() 
-    return render_template('search.html',results=results)
+        if len(results) == 0:
+            message = "No matching records found"
+
+    return render_template('search.html', results=results, message=message)
+    
 
 @app.route('/edit/<int:id>', methods=('GET', 'POST'))
 def edit(id):
@@ -136,7 +124,12 @@ def edit(id):
 
     if request.method == 'POST':
         owner = request.form['owner']
-        plate = request.form['plate']
+        plate = request.form['plate'].upper().strip()
+
+        pattern = r'^[A-Z]{3}-?\d{4}$'
+
+        if not re.match(pattern, plate):
+            return "Invalid Texas plate format. Use ABC1234 or ABC-1234", 400
 
         # Convert date format
         raw_expiry = request.form['expiry']

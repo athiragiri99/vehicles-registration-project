@@ -2,33 +2,45 @@
 <html>
 <head>
     <title>Search</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Search Vehicles</h1>
 
-    <form method="post">
-        <input type="text" name="query" placeholder="Enter name or plate">
-        <button type="submit">Search</button>
-    </form>
+<h1>Search Vehicles</h1>
 
-    <h2>Results</h2>
-    <table border="1">
-        <tr>
-            <th>Owner</th>
-            <th>Plate</th>
-            <th>Expiry</th>
-            <th>Status</th>
-        </tr>
-        {% for v in results %}
-        <tr>
-            <td>{{ v.owner }}</td>
-            <td>{{ v.plate }}</td>
-            <td>{{ v.expiry }}</td>
-            <td>{{ v.status }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+<!-- SEARCH FORM -->
+<form method="POST">
+    <input type="text" name="query" placeholder="Search owner or plate">
+    <button type="submit">Search</button>
+</form>
 
-    <a href="/">Back</a>
+<!-- ✅ ADD MESSAGE HERE -->
+{% if message %}
+    <p style="color:red;">{{ message }}</p>
+{% endif %}
+
+<!-- SEARCH RESULTS -->
+{% if results %}
+<table border="1">
+    <tr>
+        <th>Owner</th>
+        <th>Plate</th>
+        <th>Expiry</th>
+        <th>Status</th>
+    </tr>
+
+    {% for v in results %}
+    <tr>
+        <td>{{ v.owner }}</td>
+        <td>{{ v.plate }}</td>
+        <td>{{ v.expiry }}</td>
+        <td>{{ v.status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<br><br>
+    <a href="/">Back to Dashboard</a>
 </body>
 </html>

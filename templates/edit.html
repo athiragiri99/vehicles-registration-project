@@ -20,15 +20,15 @@
 
         <label>Status:</label>
         <select name="status">
+            <option {% if vehicle.status == 'Pending' %}selected{% endif %}>Pending</option>
             <option {% if vehicle.status == 'Active' %}selected{% endif %}>Active</option>
             <option {% if vehicle.status == 'Expired' %}selected{% endif %}>Expired</option>
-            <option {% if vehicle.status == 'Pending' %}selected{% endif %}>Pending</option>
         </select><br><br>
 
         <button type="submit">Update</button>
     </form>
 
-    <br>
+    <br><br>
     <a href="/">Back to Dashboard</a>
 
 </body>
