@@ -35,6 +35,18 @@ http://127.0.0.1:5000/
 
 **Screenshots:**
 
-Dashboard-
-<img width="1806" height="947" alt="image" src="https://github.com/user-attachments/assets/866b6ceb-2db6-4188-8336-7470ea2addf9" />
+**Add Vehicle:**
+<img width="1426" height="670" alt="image" src="https://github.com/user-attachments/assets/fd0ea224-6477-429a-9e2d-2f3b799f2a5e" />
+
+**Dashboard-**
+<img width="1882" height="947" alt="image" src="https://github.com/user-attachments/assets/c393c347-7133-4e12-aa16-9550a692addc" />
+
+**Search:**
+<img width="1867" height="417" alt="image" src="https://github.com/user-attachments/assets/5d09c10f-41d5-4210-9330-49ac830b9cc7" />
+
+**Edit:**
+<img width="1737" height="667" alt="image" src="https://github.com/user-attachments/assets/fa369719-860c-4248-9cbb-964851f748dd" />
+
+
+
 
